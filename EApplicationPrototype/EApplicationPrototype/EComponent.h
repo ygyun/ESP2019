@@ -9,25 +9,41 @@
 	#include "WProgram.h"
 #endif
 
+#include "EGlobal.h"
 #include "EQueue.h"
+#include "EArray.h"
 #include "EMessage.h"
 
 class EComponent
 {
-private:
-	int UID_;	// will be expand to URL...
-	static int classID_;
-	EQueue<EMessage*>* pMessageQueue_;
-	EComponent* pReceivers_[10];
-	int receiverIndex_ = 0;
-	EComponent* pTargets_[10];
-	int targetIndex_ = 0;
-
 protected:
-	virtual void processAMessage(EMessage* pMessage) = 0;
+	int UID;
+	EQueue<EMessage*>* pMessageQueue;
+	EArray<EComponent*> pReceivers;
+	EArray<EComponent*> pTargets;
 
 	void addMessage(EMessage* pMessage) {
-		this->pMessageQueue_->enqueue(pMessage);
+		this->pMessageQueue->enqueue(pMessage);
+	}
+
+public:
+	EComponent() {}
+	virtual ~EComponent() {}
+	virtual void initialize() = 0;
+	virtual void finalize() = 0;
+	virtual void generateAMessage() = 0;
+	virtual void processAMessage(EMessage* pMessage) = 0;
+
+	void setPMessageQueue(EQueue<EMessage*>* pMessageQueue) {
+		this->pMessageQueue = pMessageQueue;
+	}
+
+	void associateAReceiver(EComponent* pReceiver) {
+		this->pReceivers.add(pReceiver);
+	}
+
+	void associateATarget(EComponent* pTarget) {
+		this->pTargets.add(pTarget);
 	}
 
 	void addAReceiverMessage(unsigned int eventType, EComponent* pReceiver, int iArg = 0, void* pArg = NULL) {
@@ -36,32 +52,18 @@ protected:
 	}
 
 	void addATargetMessage(unsigned int eventType, int iArg = 0, void* pArg = NULL) {
-		for (EComponent* pComponent : pTargets_) {
-			pComponent->addAReceiverMessage(eventType, pComponent, iArg, pArg);
+		ELOG(ELOG_DEBUG, "EComponent::addATargetMessage()", "");
+		ELOG(ELOG_DEBUG, "pTargets count: ", this->pTargets.getCount());
+		for (EComponent* pComponent : this->pTargets) {
+			this->addAReceiverMessage(eventType, pComponent, iArg, pArg);
 		}
 	}
 
-public:
-	EComponent() {}
-
-	virtual ~EComponent() {}
-
-	void setPMessageQueue(EQueue<EMessage*>* pMessageQueue) {
-		this->pMessageQueue_ = pMessageQueue;
-	}
-
 	void processAMessageCaller(EMessage* pMessage) {
-		// pre- To do
+		// pre To do
 		this->processAMessage(pMessage);
-		// post- To do
-	}
-
-	void associateAReceiver(EComponent* pReceiver) {
-		this->pReceivers_[receiverIndex_++] = pReceiver;
-	}
-
-	void associateATarget(EComponent* pTarget) {
-		this->pTargets_[targetIndex_++] = pTarget;
+		delete pMessage;
+		// post To do
 	}
 };
 

@@ -9,30 +9,52 @@
 	#include "WProgram.h"
 #endif
 
+#include "EGlobal.h"
 #include "EScheduler.h"
 #include "ELifeCycleManager.h"
 
-class EMain: public EScheduler
+class EMain : public EComponent
 {
 private:
-	PELifeCycleManager lifeCycleManager;
+	// Attributes
+
+	// Parts(components)
+	EPLifeCycleManager lifeCycleManager;
+
+	// Associations
+
 public:
-	EMain() {}
+	EMain() : lifeCycleManager(this) {
+	// 1. initialize attributes
+	// 2. create components
+	}
 	~EMain() {}
 
+// As a component: COMMON ////////////////////////
 	void initialize() {
-		lifeCycleManager.initialize();
-	}
+	// 3. associate components(sometimes, MUST be in constructor)
+	// 4. initialize associated attributes
 
-	void finalize() {
-		lifeCycleManager.finalize();
-	}
-
+	// 5. initialize components(for child, chaning), 2 path initialization
+	//           for( element : array )
+	//                 initialize()
+ 	}
+	void finalize() {}
+	void generateAMessage() {}
 	void processAMessage(EMessage* pMessage) {}
+//////////////////////////////////////////////////
 
-	void run() {
-		lifeCycleManager.run();
+// As a system component: SPECIALIZED  ///////////////
+	void initializeAsMain() {
+		ELOG(ELOG_INFO, "EMain::initializeAsMain()", "");
+		this->lifeCycleManager.initializeAsLifeCycleManager();
 	}
+
+	void runAsMain() {
+		ELOG(ELOG_INFO, "EMain::runAsMain()", "");
+		this->lifeCycleManager.run();
+	}
+///////////////////////////////////////////////////////
 };
 
 #endif

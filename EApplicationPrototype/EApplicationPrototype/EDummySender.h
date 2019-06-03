@@ -11,13 +11,41 @@
 
 #include "EComponent.h"
 
-class EDummySender: public EComponent
+class EDummySender : public EComponent
 {
+public:
+	enum EMessageType {
+		eWakeUp,
+		eNumMessageTypes
+	};
+	enum EState {
+		eReady,
+		eRunning,
+		eStopped,
+		eNumStates
+	};
 private:
-//	main, scheduler, logger;
-
-protected:
-	void processAMessage(EMessage* pMessage) {}
+	EState eState;
+public:
+	EDummySender() {
+		this->eState = EState::eStopped;
+	}
+	~EDummySender() {}
+	void initialize() {}
+	void finalize() {}
+	void generateAMessage() {
+		if (this->eState == EState::eRunning) {
+			for (EComponent *pComponent : this->pReceivers) {
+				ELOG(ELOG_INFO, "EDummySender is GENerating a msg.", "");
+				pComponent->addAReceiverMessage(0, pComponent);
+			}
+			this->eState = EState::eStopped;
+		}
+	}
+	void processAMessage(EMessage* pMessage) {
+		ELOG(ELOG_INFO, "EDummySender is PROcessing a msg.", "");
+		this->eState = EState::eRunning;
+	}
 };
 
 #endif

@@ -11,25 +11,38 @@
 
 #include "EComponent.h"
 
-class ETimer: public EComponent
+
+class ETimer : public EComponent
 {
 public:
-	enum EState{
+	enum EState {
+		Timeout,
 		eStart,
 		eStop,
 		ePause,
 		eNumStates
 	};
-	unsigned int preTime;
-	unsigned int curTime;
-	void processAMessage(EMessage* pMessage) {
-		if (pMessage->getType() == ETimer::eStart) {
-			preTime = curTime;
-			curTime = millis();
-
-			// to send message self too
+private:
+	unsigned long preTime;
+	unsigned long curTime;
+public:
+	ETimer() {}
+	~ETimer() {}
+	void initialize() {
+		this->preTime = millis();
+	}
+	void finalize() {}
+	void generateAMessage() {
+		this->curTime = millis();
+		unsigned long diff = this->curTime - this->preTime;
+		if (diff >= TIMER_TIMEOUT) {
+			this->preTime = this->curTime;
+			ELOG(ELOG_INFO, "Time diff: ", diff);
+			ELOG(ELOG_INFO, "ETimer is GENerating a msg.", "");
+			this->addATargetMessage(0);
 		}
 	}
+	void processAMessage(EMessage* pMessage) {}
 };
 
 #endif

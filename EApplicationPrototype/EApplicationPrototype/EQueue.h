@@ -9,45 +9,59 @@
 	#include "WProgram.h"
 #endif
 
-template<typename Element, int size=32>
+#include "EGlobal.h"
+
+template<typename Element, int size = DEFAULT_SIZE_OF_EQUEUE>
 class EQueue
 {
 private:
-	Element buffer_[size];
-	int head_;
-	int tail_;
-	int count_; // usage etc...
+	Element buffer[size];
+	unsigned int head;
+	unsigned int tail;
+	unsigned int count;
 
 public:
 	EQueue() {
-		this->head_ = 0;
-		this->tail_ = 0;
+		this->head = 0;
+		this->tail = 0;
+		this->count = 0;
 	}
 
 	~EQueue() {}
 
-inline int next(int cur) {
+	int next(int cur) {
 		return (cur + 1) % size;
 	}
 
 	bool enqueue(Element element) {
-		if (this->head_ == next(this->tail_)) {
+		ELOG(ELOG_DEBUG, "EQueue::enqueue()", "");
+		if (this->head == next(this->tail)) {
+			ELOG(ELOG_ERROR, "EQueue is full.", "");
 			return false;
 		}
-		this->buffer_[this->tail_] = element;
-		this->tail_ = next(this->tail_);
+		this->buffer[this->tail] = element;
+		this->tail = next(this->tail);
+		(this->count)++;
 		return true;
 	}
 
 	Element dequeue() {
-		if (this->head_ == this->tail_) {
+		if (this->head == this->tail) {
 			return NULL;
 		}
-		Element return_value = this->buffer_[this->head_];
-		this->head_ = next(this->head_);
-		return return_value;
+		Element returnValue = this->buffer[this->head];
+		this->head = next(this->head);
+		(this->count)--;
+		return returnValue;
+	}
+
+	unsigned int getCount() { return this->count;}
+
+	void clear() {
+		this->head = 0;
+		this->tail = 0;
+		this->count = 0;
 	}
 };
 
 #endif
-

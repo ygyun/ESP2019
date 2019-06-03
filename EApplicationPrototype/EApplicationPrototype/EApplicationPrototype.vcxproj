@@ -126,7 +126,15 @@
     <ClInclude Include="ETimer.h" />
     <ClInclude Include="__vm\.EApplicationPrototype.vsarduino.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EMessage.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties arduino.upload.port="COM3" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

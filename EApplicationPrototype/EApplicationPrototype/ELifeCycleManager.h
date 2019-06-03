@@ -9,90 +9,117 @@
 	#include "WProgram.h"
 #endif
 
+#include "EGlobal.h"
 #include "EComponent.h"
 #include "ETimer.h"
 #include "EDummySender.h"
 #include "EDummyReceiver.h"
 
-class ELifeCycleManager: public EComponent
+class ELifeCycleManager : public EComponent
 {
 private:
-	EComponent* pComponents[10];
-	unsigned int index = 0;
-protected:
-	EScheduler scheduler;
-//	ELogManager logManager;
+	EArray<EComponent*> pComponents;
+		EComponent* pMain;
+		EScheduler scheduler;	// to be chanded to * and a main
+//		ELogManager logManager;
+//		EExceptionManager exceptionManager;
 
+protected:
 	void createComponents() {
 		this->createSystemComponents();
 		this->createUserComponents();
 	}
-	void createSystemComponents() {
-		// to do
-	}
+	void createSystemComponents() {}
+
 	void registerComponents() {
 		this->registerSystemComponents();
 		this->registerUserComponents();
 	}
-	void registerAComponent(EComponent* pComponent) {
-		this->pComponents[index++] = pComponent;
-	}
 	void registerSystemComponents() {
-		this->registerAComponent(&main);
-		this->registerAComponent(&scheduler);
-//		this->registerAComponent(&logManager);
+		this->registerAComponent(this->pMain);
 		this->registerAComponent(this);
+		this->registerAComponent(&(this->scheduler));
+//		this->registerAComponent(&logManager_);
 	}
-	void associateASenderNAReceiver(EComponent* pSender, EComponent* pReceiver) {}
-	void associateASourcesNATarget(EComponent* pSource, EComponent* pTarget) {}
+	void registerAComponent(EComponent* pComponent) {
+		this->pComponents.add(pComponent);
+		pComponent->setPMessageQueue(&(scheduler.getMessageQueue()));
+	}
+
+	void associateASenderNAReceiver(EComponent* pSender, EComponent* pReceiver) {
+		pSender->associateAReceiver(pReceiver);
+		this->scheduler.addAMessageGeneratingComponent(pSender);
+	}
+
+	void associateASourcesNATarget(EComponent* pSource, EComponent* pTarget) {
+		pSource->associateATarget(pTarget);
+		this->scheduler.addAMessageGeneratingComponent(pSource);
+	}
 
 	virtual void createUserComponents() = 0;
 	virtual void registerUserComponents() = 0;
 	virtual void associateSendersNReceivers() = 0;
 	virtual void associateSourcesNTargets() = 0;
-	virtual void processAMessage(EMessage* pMessage) = 0;
 
 public:
-	ELifeCycleManager() {}
+	ELifeCycleManager(EComponent* pMain) : pMain(pMain) {}
 	virtual ~ELifeCycleManager() {}
-	void initialize() {
+	void initialize() {}
+	void finalize() {}
+	void generateAMessage() {}
+	void processAMessage(EMessage* pMessage) {}
+
+	// initialize As Component
+	// initialize As LifeCycleManager
+	// initialize As Task
+	void initializeAsLifeCycleManager() {
+		// As a boot up   /////////////////////////////
 		this->createComponents();
 		this->registerComponents();
 		this->associateSendersNReceivers();
 		this->associateSourcesNTargets();
-	
-		this->scheduler.initialize();
+		///////////////////////////////////////////////
+
+		// if needed, might be PAUSED here
+
+		// As a system, initialize components /////////
+		for (EComponent* pComponent : pComponents) {
+			ELOG(ELOG_DEBUG, "ELifeCycleManager: Initialize a Component", "");
+			pComponent->initialize();
+		}
+		///////////////////////////////////////////////
 	}
-	void finalize() {
-		this->scheduler.finalize();
-	}
+
 	void run() {
+		ELOG(ELOG_INFO, "ELifeCycleManager::run()", "");
 		this->scheduler.run();
 	}
 };
 
-class PELifeCycleManager : public ELifeCycleManager {
-public:
+// User programming area	///////////////////////////////////
+class EPLifeCycleManager : public ELifeCycleManager
+{
+protected:
 	ETimer timer;
-
 	EDummySender sender;
 	EDummyReceiver receiver;
 
+public:
+	EPLifeCycleManager(EComponent* pMain) : ELifeCycleManager(pMain) {}
+	~EPLifeCycleManager() {}
+
 	void createUserComponents() {}
 	void registerUserComponents() {
-		this->registerAComponent(&timer);
-		this->registerAComponent(&sender);
-		this->registerAComponent(&receiver);
+		this->registerAComponent(&(this->timer));
+		this->registerAComponent(&(this->sender));
+		this->registerAComponent(&(this->receiver));
 	}
 	void associateSendersNReceivers() {
-		associateASenderNAReceiver(&sender, &receiver);
+		this->associateASenderNAReceiver(&(this->sender), &(this->receiver));
 	}
 	void associateSourcesNTargets() {
-		this->associateASourcesNATarget(&timer, &sender);
-//		this->associateASourcesNATarget(&sender, &receiver);
+		this->associateASourcesNATarget(&(this->timer), &(this->sender));
 	}
-	void processAMessage(EMessage* pMessage) {}
 };
 
 #endif
-
