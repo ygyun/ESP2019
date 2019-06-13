@@ -34,7 +34,7 @@ public:
 	}
 
 	bool enqueue(Element element) {
-		ELOG(ELOG_DEBUG, "EQueue::enqueue()", "");
+		ELOG(ELOG_ALL, "EQueue::enqueue()", "");
 		if (this->head == next(this->tail)) {
 			ELOG(ELOG_ERROR, "EQueue is full.", "");
 			return false;

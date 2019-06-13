@@ -14,6 +14,9 @@
 #include "ETimer.h"
 #include "EDummySender.h"
 #include "EDummyReceiver.h"
+#include "EIlluminant.h"
+#include "EDistance.h"
+#include "ELightEmittingDiode.h"
 
 class ELifeCycleManager : public EComponent
 {
@@ -91,7 +94,7 @@ public:
 	}
 
 	void run() {
-		ELOG(ELOG_INFO, "ELifeCycleManager::run()", "");
+		ELOG(ELOG_DEBUG, "ELifeCycleManager::run()", "");
 		this->scheduler.run();
 	}
 };
@@ -100,25 +103,36 @@ public:
 class EPLifeCycleManager : public ELifeCycleManager
 {
 protected:
-	ETimer timer;
-	EDummySender sender;
-	EDummyReceiver receiver;
+	ETimer timerIlluminant;
+	ETimer timerDistance;
+//	EDummySender sender;
+//	EDummyReceiver receiver;
+	EIlluminant illuminant;
+	EDistance distance;
+	ELightEmittingDiode lightEmittingDiode;
 
 public:
-	EPLifeCycleManager(EComponent* pMain) : ELifeCycleManager(pMain) {}
+	EPLifeCycleManager(EComponent* pMain):
+		ELifeCycleManager(pMain),
+		timerIlluminant(TIMER_TIMEOUT_ILLUMINANT),
+		timerDistance(TIMER_TIMEOUT_DISTANCE)	{}
 	~EPLifeCycleManager() {}
 
 	void createUserComponents() {}
 	void registerUserComponents() {
-		this->registerAComponent(&(this->timer));
-		this->registerAComponent(&(this->sender));
-		this->registerAComponent(&(this->receiver));
+		this->registerAComponent(&(this->timerIlluminant));
+		this->registerAComponent(&(this->timerDistance));
+		this->registerAComponent(&(this->illuminant));
+		this->registerAComponent(&(this->distance));
+		this->registerAComponent(&(this->lightEmittingDiode));
 	}
 	void associateSendersNReceivers() {
-		this->associateASenderNAReceiver(&(this->sender), &(this->receiver));
+		this->associateASenderNAReceiver(&(this->illuminant), &(this->lightEmittingDiode));
+		this->associateASenderNAReceiver(&(this->distance), &(this->lightEmittingDiode));
 	}
 	void associateSourcesNTargets() {
-		this->associateASourcesNATarget(&(this->timer), &(this->sender));
+		this->associateASourcesNATarget(&(this->timerIlluminant), &(this->illuminant));
+		this->associateASourcesNATarget(&(this->timerDistance), &(this->distance));
 	}
 };
 

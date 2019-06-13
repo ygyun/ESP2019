@@ -36,14 +36,14 @@ public:
 	void generateAMessage() {
 		if (this->eState == EState::eRunning) {
 			for (EComponent *pComponent : this->pReceivers) {
-				ELOG(ELOG_INFO, "EDummySender is GENerating a msg.", "");
+				ELOG(ELOG_DEBUG, "EDummySender is GENerating a msg.", "");
 				pComponent->addAReceiverMessage(0, pComponent);
 			}
 			this->eState = EState::eStopped;
 		}
 	}
 	void processAMessage(EMessage* pMessage) {
-		ELOG(ELOG_INFO, "EDummySender is PROcessing a msg.", "");
+		ELOG(ELOG_DEBUG, "EDummySender is PROcessing a msg.", "");
 		this->eState = EState::eRunning;
 	}
 };

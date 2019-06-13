@@ -15,6 +15,10 @@
 class ETimer : public EComponent
 {
 public:
+	enum EMessageType {
+		eWakeUp,
+		eNumMessageTypes
+	};
 	enum EState {
 		Timeout,
 		eStart,
@@ -23,10 +27,11 @@ public:
 		eNumStates
 	};
 private:
+	unsigned long timeout;
 	unsigned long preTime;
 	unsigned long curTime;
 public:
-	ETimer() {}
+	ETimer(unsigned int timeout = TIMER_TIMEOUT): timeout(timeout) {}
 	~ETimer() {}
 	void initialize() {
 		this->preTime = millis();
@@ -35,11 +40,11 @@ public:
 	void generateAMessage() {
 		this->curTime = millis();
 		unsigned long diff = this->curTime - this->preTime;
-		if (diff >= TIMER_TIMEOUT) {
+		if (diff >= this->timeout) {
 			this->preTime = this->curTime;
-			ELOG(ELOG_INFO, "Time diff: ", diff);
-			ELOG(ELOG_INFO, "ETimer is GENerating a msg.", "");
-			this->addATargetMessage(0);
+			ELOG(ELOG_INFO, "Timer: ", diff);
+			ELOG(ELOG_DEBUG, "ETimer is GENerating a msg.", "");
+			this->addATargetMessage(EMessageType::eWakeUp);
 		}
 	}
 	void processAMessage(EMessage* pMessage) {}

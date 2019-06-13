@@ -57,6 +57,42 @@
     <ClInclude Include="EGlobal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EAnalogInputChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EDigitalInputChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EDigitalOutputChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EPWMInputChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EPWMOutputChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EIlluminant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EPhotoResistor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ELightEmittingDiode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ERGBLED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EUltrasonicWave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EDistance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EMessage.cpp">

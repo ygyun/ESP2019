@@ -25,9 +25,8 @@ public:
 	void finalize() {}
 	void generateAMessage() {}
 	void processAMessage(EMessage* pMessage) {
-		ELOG(ELOG_INFO, "EDummyReceiver is PROcessing a msg.", "");
+		ELOG(ELOG_DEBUG, "EDummyReceiver is PROcessing a msg.", "");
 	}
 };
 
 #endif
-

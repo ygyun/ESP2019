@@ -6,6 +6,7 @@
 
 // the setup function runs once when you press reset or power the board
 #include "EMain.h"
+#include "EGlobal.h"
 
 static EMain simpleMain;
 

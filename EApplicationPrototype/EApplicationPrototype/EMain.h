@@ -46,12 +46,12 @@ public:
 
 // As a system component: SPECIALIZED  ///////////////
 	void initializeAsMain() {
-		ELOG(ELOG_INFO, "EMain::initializeAsMain()", "");
+		ELOG(ELOG_DEBUG, "EMain::initializeAsMain()", "");
 		this->lifeCycleManager.initializeAsLifeCycleManager();
 	}
 
 	void runAsMain() {
-		ELOG(ELOG_INFO, "EMain::runAsMain()", "");
+		ELOG(ELOG_DEBUG, "EMain::runAsMain()", "");
 		this->lifeCycleManager.run();
 	}
 ///////////////////////////////////////////////////////

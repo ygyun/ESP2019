@@ -56,9 +56,8 @@ public:
 	}
 
 	void run() {
-		ELOG(ELOG_INFO, "EScheduler::run()", "");
+		ELOG(ELOG_DEBUG, "EScheduler::run()", "");
 		while (this->eState == EState::eReady) {
-
 			// Sensing
 			for (EComponent* pComponent : this->pMessageGeneratingComponents) {
 				pComponent->generateAMessage();
@@ -67,9 +66,9 @@ public:
 			// Actuating
 			EMessage* pEMessage = this->messageQueue.dequeue();
 			if (NULL != pEMessage) {
-				ELOG(ELOG_DEBUG, "messageQueue.dequeue()", "");
+				ELOG(ELOG_ALL, "messageQueue.dequeue()", "");
 				pEMessage->getPTarget()->processAMessageCaller(pEMessage);
-				ELOG(ELOG_DEBUG, "processed message", "");
+				ELOG(ELOG_ALL, "processed message", "");
 			}
 		}
 	}

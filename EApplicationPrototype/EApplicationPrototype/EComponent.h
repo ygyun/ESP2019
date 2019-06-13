@@ -52,8 +52,8 @@ public:
 	}
 
 	void addATargetMessage(unsigned int eventType, int iArg = 0, void* pArg = NULL) {
-		ELOG(ELOG_DEBUG, "EComponent::addATargetMessage()", "");
-		ELOG(ELOG_DEBUG, "pTargets count: ", this->pTargets.getCount());
+		ELOG(ELOG_ALL, "EComponent::addATargetMessage()", "");
+		ELOG(ELOG_ALL, "pTargets count: ", this->pTargets.getCount());
 		for (EComponent* pComponent : this->pTargets) {
 			this->addAReceiverMessage(eventType, pComponent, iArg, pArg);
 		}
