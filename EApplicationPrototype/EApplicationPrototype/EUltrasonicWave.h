@@ -33,12 +33,10 @@ private:
 	EChannel *pChannels[eNumChannelIds];
 	unsigned long initialTime;
 	unsigned long startTime;
-	bool bReset;
 public:
 	EUltrasonicWave(EChannelId eIdTransmitter, EChannel *pChannelTransmitter, EChannelId eIdReceiver, EChannel *pChannelReceiver) {
 		this->pChannels[eIdTransmitter] = pChannelTransmitter;
 		this->pChannels[eIdReceiver] = pChannelReceiver;
-		bReset = true;
 	}
 	~EUltrasonicWave() {}
 	void initialize() {
@@ -47,14 +45,19 @@ public:
 	}
 	void finalize() {}
 	int read() {
-		if (this->eState == EState::eReady) {
+		if (micros() - this->initialTime > MJUC_TIME_OUT_OF_MEASURING_IN_MICROSECOND) {
+			this->eState = EState::eReady;
 			this->initialTime = micros();
+			return 0;
+		}
+
+		if (this->eState == EState::eReady) {
 			this->pChannels[eIdTransmitter]->write(HIGH);
 			this->startTime = micros();
 			this->eState = EState::eWaitForDeviceReady;
 		}
 		else if (this->eState == EState::eWaitForDeviceReady) {
-			if (micros() - this->startTime > 10){
+			if (micros() - this->startTime > 10) {
 				this->pChannels[eIdTransmitter]->write(LOW);
 				this->eState = EState::eMeasuringReady;
 			}
@@ -72,12 +75,9 @@ public:
 		}
 		else if (this->eState == EState::eMeasuring) {
 			if (this->pChannels[eIdReceiver]->read() == LOW) {
-				this->eState = EState::eReady;
 				return micros() - this->startTime;
+				this->eState = EState::eReady;
 			}
-		}
-		if (micros() - this->initialTime > MJUC_TIME_OUT_OF_MEASURING_IN_MICROSECOND) {
-			this->eState = EState::eReady;
 		}
 		return 0;
 	}
