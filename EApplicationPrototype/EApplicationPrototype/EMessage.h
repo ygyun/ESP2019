@@ -9,38 +9,43 @@
 	#include "WProgram.h"
 #endif
 
-#include "EGlobal.h"
 #include "EMemoryManager.h"
 
 class EComponent;
 
-static unsigned int messageID = 0;
+static unsigned long long messageID = 0;
 
 class EMessage {
 private:
-	unsigned int ID_;
-	unsigned int type_;
-	EComponent* pTarget_;
-	EComponent* pSource_;
-	int iArg_;
-	void* pArg_;
+	unsigned long long ID;
+	unsigned int type;
+	EComponent* pTarget;
+	EComponent* pSource;
+	int iArg;
+	void* pArg;
 public:
-	static EMemoryManager<EMessage> memoryManager;
+	static EMemoryManager memoryManager;
 	EMessage() {}
+	EMessage(unsigned int type, EComponent* pTarget, int iArg = 0, void* pArg = NULL) :
+		ID(++messageID),
+		type(type),
+		pTarget(pTarget),
+		iArg(iArg),
+		pArg(pArg) {}
 	EMessage(unsigned int type, EComponent* pTarget, EComponent* pSource, int iArg = 0, void* pArg = NULL) :
-		ID_(++messageID),
-		type_(type),
-		pTarget_(pTarget),
-		pSource_(pSource),
-		iArg_(iArg),
-		pArg_(pArg) {}
-
+		ID(++messageID),
+		type(type),
+		pTarget(pTarget),
+		pSource(pSource),
+		iArg(iArg),
+		pArg(pArg) {}
 	~EMessage() {}
-	unsigned int getType() { return this->type_; }
-	EComponent* getPTarget() { return this->pTarget_; }
-	EComponent* getPSource() { return this->pSource_; }
-	int getIArg() { return this->iArg_; }
-	void* getPArg() { return this->pArg_; }
+	unsigned int getType() {return this->type;}
+	EComponent* getPTarget() {return this->pTarget;}
+	EComponent* getPSource() {return this->pSource;}
+	int getIArg() {return this->iArg;}
+	void* getPArg() {return this->pArg;}
+
 	void* operator new (size_t size) {
 		return memoryManager.allocate();
 	}

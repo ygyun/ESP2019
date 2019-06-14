@@ -9,7 +9,8 @@
 	#include "WProgram.h"
 #endif
 
-template<typename Element>
+#include "EGlobal.h"
+
 class EMemoryManager
 {
 public:
@@ -18,14 +19,16 @@ public:
 	};
 
 private:
-	FreeStore* freeStoreHead_;
-//	FreeStore* freeStrorHead_ = char[sizeof(Element)* size];
+	FreeStore* freeStoreHead;
 
 public:
-	EMemoryManager(int numBlocks = 32){
-		size_t size = (sizeof(Element) > sizeof(FreeStore*)) ? sizeof(Element) : sizeof(FreeStore*);
+	static EMemoryManager messageMemoryManager;
+	EMemoryManager(size_t size, int numBlocks = DEFAULT_NUM_BLOCKS_OF_MEMORY_MANAGER) {
+		if (size < sizeof(FreeStore*)) {
+			size = sizeof(FreeStore*);
+		}
 		FreeStore* head = reinterpret_cast <FreeStore*> (new char[size]);
-		this->freeStoreHead_ = head;
+		this->freeStoreHead = head;
 
 		for (int i = 0; i < numBlocks; i++) {
 			head->next = reinterpret_cast <FreeStore*> (new char[size]);
@@ -34,26 +37,24 @@ public:
 		head->next = 0;
 	}
 
-	~EMemoryManager() { cleanUp(); }
+	~EMemoryManager() {
+		FreeStore* nextPtr = this->freeStoreHead;
+		for (; nextPtr; nextPtr = freeStoreHead) {
+			this->freeStoreHead = this->freeStoreHead->next;
+			delete[] nextPtr;
+		}
+	}
 
 	void* allocate() {
-		FreeStore* head = this->freeStoreHead_;
-		freeStoreHead_ = head->next;
+		FreeStore* head = this->freeStoreHead;
+		freeStoreHead = head->next;
 		return head;
 	}
 
 	void free(void* deleted) {
 		FreeStore* head = static_cast <FreeStore*> (deleted);
-		head->next = this->freeStoreHead_;
-		freeStoreHead_ = head;
-	}
-
-	void cleanUp() {
-		FreeStore* nextPtr = this->freeStoreHead_;
-		for (; nextPtr; nextPtr = freeStoreHead_) {
-			this->freeStoreHead_ = this->freeStoreHead_->next;
-			delete[] nextPtr;
-		}
+		head->next = this->freeStoreHead;
+		freeStoreHead = head;
 	}
 };
 

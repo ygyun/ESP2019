@@ -112,21 +112,41 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EAnalogInputChannel.h" />
+    <ClInclude Include="EChannel.h" />
+    <ClInclude Include="EDigitalInputChannel.h" />
+    <ClInclude Include="EDigitalOutputChannel.h" />
     <ClInclude Include="EArray.h" />
     <ClInclude Include="EComponent.h" />
+    <ClInclude Include="EDistance.h" />
     <ClInclude Include="EDummyReceiver.h" />
     <ClInclude Include="EDummySender.h" />
     <ClInclude Include="EGlobal.h" />
+    <ClInclude Include="EIlluminant.h" />
     <ClInclude Include="ELifeCycleManager.h" />
+    <ClInclude Include="ELightEmittingDiode.h" />
     <ClInclude Include="EMain.h" />
     <ClInclude Include="EMemoryManager.h" />
     <ClInclude Include="EMessage.h" />
+    <ClInclude Include="EPhotoResistor.h" />
     <ClInclude Include="EQueue.h" />
+    <ClInclude Include="ERGBLED.h" />
     <ClInclude Include="EScheduler.h" />
     <ClInclude Include="ETimer.h" />
+    <ClInclude Include="EPWMInputChannel.h" />
+    <ClInclude Include="EPWMOutputChannel.h" />
+    <ClInclude Include="EUltrasonicWave.h" />
     <ClInclude Include="__vm\.EApplicationPrototype.vsarduino.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EMessage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties debug.remote.portname="" debug.view.FreeMemory="" debug.local.portname="" debug.view.AnalogPins="" debug.remote.portspeed="" arduino.upload.port="COM4" debug.view.DigitalPins="" debug.local.portspeed="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

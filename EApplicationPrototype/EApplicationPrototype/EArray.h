@@ -9,54 +9,64 @@
 	#include "WProgram.h"
 #endif
 
-template<typename Element, unsigned int size=32>
+#include "EGlobal.h"
+
+template<typename Element, unsigned int size = DEFAULT_SIZE_OF_EARRAY>
 class EArray
 {
 public:
 	class Iterator {
 	private:
-		Element* pIndex_;
+		Element* pIndex;
 	public:
-		Iterator(Element* pIndex = 0) : pIndex_(pIndex) {}
-		bool operator!=(const Iterator& iter) { return this->pIndex_ != iter.pIndex_; }
-		bool operator==(const Iterator& iter) { return this->pIndex_ == iter.pIndex_; }
-		Iterator& operator++() { ++(this->pIndex_); return (*this); }
-		const Iterator operator++(int) { Iterator return_value(*this); (this->pIndex_)++; return return_value; }
-		Element operator*() { return (*this->pIndex_); }
+		Iterator(Element* pIndex = 0) : pIndex(pIndex) {}
+		bool operator!=(const Iterator& iter) { return this->pIndex != iter.pIndex; }
+		bool operator==(const Iterator& iter) { return this->pIndex == iter.pIndex; }
+		Iterator& operator++() { ++(this->pIndex); return (*this); }
+		const Iterator operator++(int) { Iterator returnValue(*this); (this->pIndex)++; return returnValue; }
+		Element operator*() { return *(this->pIndex); }
+		Element* getPIndex() { return this->pIndex; }
 	};
 private:
-	Element buffer_[size];
-	unsigned int count_;
-	Iterator iterBegin_;
-	Iterator iterEnd_;
+	Element buffer[size];
+	unsigned int count;
+	Iterator iterBegin;
+	Iterator iterEnd;
 public:
 	EArray() {
-		this->count_ = 0;
-		this->iterBegin_ = Iterator(this->buffer_);
-		this->iterEnd_ = Iterator(this->buffer_);
+		this->count = 0;
+		this->iterBegin = Iterator(this->buffer);
+		this->iterEnd = Iterator(this->buffer);
 	}
-
 	~EArray() {}
 
+	unsigned int getCount() { return this->count; }
 	bool add(Element element) {
-		if (this->count_ < size) {
-			this->arr_[(this->count_)++] = element;
-			++(this->iterEnd_);
+		if (this->count < size) {
+			this->buffer[(this->count)++] = element;
+			++(this->iterEnd);
 			return true;
 		}
+		ELOG(ELOG_ERROR, "EArray.add()", "Too many element");
 		return false;
 	}
 
-	Iterator begin() { return this->iterBegin_; }
-	Iterator end() { return this->iterEnd_; }
+	Iterator begin() { return this->iterBegin;}
+	Iterator end() { return this->iterEnd;}
 
-	Element& operator[](int index) {
-		if ((index >= 0) && (index < this->count_)) {
-			return this->buffer_[index];
+	Element& operator[](unsigned int index) {
+		if ((index >= 0) && (index < this->count)) {
+			return this->buffer[index];
 		}
+		ELOG(ELOG_ERROR, "EArray.[]", "Out of index");
 		return NULL;
+	}
+
+	void clear() {
+		this->count = 0;
+		this->iterBegin = Iterator(this->buffer);
+		this->iterEnd = Iterator(this->buffer);
 	}
 };
 
 #endif
-

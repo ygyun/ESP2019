@@ -12,8 +12,6 @@
 #include "EGlobal.h"
 #include "EComponent.h"
 
-//TypeID<EScheduler> tidEScheduler;
-
 class EScheduler : public EComponent
 {
 public:
@@ -24,40 +22,56 @@ public:
 		eNumMessageTypes
 	};
 	enum EState {
+		eReady,
 		eRunning,
 		eStopped,
 		eNumStates
 	};
 private:
-	EQueue<EMessage*> eMessageQueue;
+	EArray<EComponent*> pMessageGeneratingComponents;
+	EQueue<EMessage*> messageQueue;
 	EState eState;
 
 public:
-	EScheduler() { this->eState = EState::eRunning; }
+	EScheduler() {
+		this->eState = EState::eReady;
+	}
 	~EScheduler() {}
 	void initialize() {}
 	void finalize() {}
+	void generateAMessage() {}
 	void processAMessage(EMessage* pMessage) {
 		switch (pMessage->getType()) {
-		case eStop:
-			this->eState = eStopped; break;
+		case EMessageType::eStop:
+			this->eState = EState::eStopped; break;
 		}
 	}
 
+	EQueue<EMessage*>& getMessageQueue() {
+		return this->messageQueue;
+	}
+
+	void addAMessageGeneratingComponent(EComponent* pComponent) {
+		this->pMessageGeneratingComponents.add(pComponent);
+	}
+
 	void run() {
-//		addAReceiverMessage(to timer);
-		while (this->eState == EState::eRunning) {	// State flag
-			EMessage* pEMessage = eMessageQueue.dequeue();
-			if (NULL == pEMessage) {
-				delay(1000); // 1ms
+		ELOG(ELOG_DEBUG, "EScheduler::run()", "");
+		while (this->eState == EState::eReady) {
+			// Sensing
+			for (EComponent* pComponent : this->pMessageGeneratingComponents) {
+				pComponent->generateAMessage();
 			}
-			else {
+			ELOG(ELOG_ALL, "Queue size: ", messageQueue.getCount());
+			// Actuating
+			EMessage* pEMessage = this->messageQueue.dequeue();
+			if (NULL != pEMessage) {
+				ELOG(ELOG_ALL, "messageQueue.dequeue()", "");
 				pEMessage->getPTarget()->processAMessageCaller(pEMessage);
+				ELOG(ELOG_ALL, "processed message", "");
 			}
 		}
-		this->finalize();
 	}
 };
 
 #endif
-

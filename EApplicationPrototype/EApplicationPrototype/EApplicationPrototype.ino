@@ -6,24 +6,15 @@
 
 // the setup function runs once when you press reset or power the board
 #include "EMain.h"
-#include "ETimer.h"
-#include "EDummyReceiver.h"
-#include "EDummySender.h"
-#include "ELifeCycleManager.h"
-#include "EScheduler.h"
-#include "EComponent.h"
-#include "EMemoryManager.h"
-#include "EMessage.h"
-#include "EArray.h"
-#include "EQueue.h"
+#include "EGlobal.h"
 
-EMain main;
+static EMain simpleMain;
 
 void setup() {
-	main.initialize();
+	simpleMain.initializeAsMain();
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-	main.run();
+	simpleMain.runAsMain();
 }
